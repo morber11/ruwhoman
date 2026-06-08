@@ -2,6 +2,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import CreatePage from './features/create/CreatePage';
 import ChallengePage from './features/challenge/ChallengePage';
 import MonitorPage from './features/monitor/MonitorPage';
@@ -66,11 +67,14 @@ export default function App() {
                         </div>
                     </header>
                     <main className="container">
-                        <Routes>
-                            <Route path="/" element={<CreatePage />} />
-                            <Route path="/monitor/:token" element={<MonitorPage />} />
-                            <Route path="/:token" element={<ChallengePage />} />
-                        </Routes>
+                        {/* error boundary might be overkill but oh well */}
+                        <ErrorBoundary>
+                            <Routes>
+                                <Route path="/" element={<CreatePage />} />
+                                <Route path="/monitor/:token" element={<MonitorPage />} />
+                                <Route path="/:token" element={<ChallengePage />} />
+                            </Routes>
+                        </ErrorBoundary>
                     </main>
                 </BrowserRouter>
             </QueryClientProvider>
