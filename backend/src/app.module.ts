@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { HealthController } from './health.controller';
 import { ChallengesModule } from './challenges/challenges.module';
 import { MonitorModule } from './monitor/monitor.module';
 
@@ -22,6 +23,7 @@ import { MonitorModule } from './monitor/monitor.module';
         ChallengesModule,
         MonitorModule,
     ],
+    controllers: [HealthController],
     providers: [
         {
             provide: APP_GUARD,
