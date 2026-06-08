@@ -78,7 +78,9 @@ export default function CreatePage() {
 
             {mutation.isError && (
                 <Typography color="error" variant="body2" sx={{ mt: 2 }}>
-                    Failed to create challenge. Try again
+                    {(mutation.error as { status?: number }).status === 429
+                        ? 'You are being rate limited. Try again shortly'
+                        : 'Failed to create challenge. Try again'}
                 </Typography>
             )}
 

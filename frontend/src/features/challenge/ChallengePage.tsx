@@ -77,6 +77,7 @@ export default function ChallengePage() {
 
         if (status === 404) message = 'Challenge not found or expired';
         if (status === 409) message = 'This challenge has already been completed';
+        if (status === 429) message = 'You are being rate limited. Try again shortly';
 
         return (
             <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', py: 4 }}>
@@ -99,6 +100,16 @@ export default function ChallengePage() {
                 {mutation.data.passed
                     ? 'Correct! You are human'
                     : 'Wrong answer. You may be a robot'}
+            </Typography>
+        );
+    }
+
+    if (mutation.isError) {
+        return (
+            <Typography variant="body2" sx={{ color: 'error.main', textAlign: 'center', py: 4 }}>
+                {(mutation.error as { status?: number }).status === 429
+                    ? 'You are being rate limited. Try again shortly'
+                    : 'Something went wrong submitting your answer'}
             </Typography>
         );
     }
