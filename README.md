@@ -16,6 +16,7 @@ Experimenting with a monorepo + nest.js for backend
 - **Backend:** TypeScript + NestJS + PostgreSQL
   - Modular NestJS structure
   - TypeORM migrations for schema changes
+  - CRON job runs at midnight to clean up expired challenges
 
 Both are using Jest for tests
 
