@@ -6,6 +6,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import CreatePage from './features/create/CreatePage';
 import ChallengePage from './features/challenge/ChallengePage';
 import MonitorPage from './features/monitor/MonitorPage';
+import NotFoundPage from './features/not-found/NotFoundPage';
 
 const theme = createTheme({
     palette: {
@@ -73,6 +74,7 @@ export default function App() {
                                 <Route path="/" element={<CreatePage />} />
                                 <Route path="/monitor/:token" element={<MonitorPage />} />
                                 <Route path="/:token" element={<ChallengePage />} />
+                                <Route path="*" element={<NotFoundPage />} />
                             </Routes>
                         </ErrorBoundary>
                     </main>
