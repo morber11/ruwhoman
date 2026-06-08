@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Challenge } from '../challenges/challenge.entity';
+import { ChallengesModule } from '../challenges/challenges.module';
 import { MonitorController } from './monitor.controller';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Challenge])],
+    imports: [ChallengesModule],
     controllers: [MonitorController],
 })
-
 export class MonitorModule { }

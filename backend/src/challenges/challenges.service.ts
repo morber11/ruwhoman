@@ -16,6 +16,28 @@ export class ChallengesService {
         private readonly config: ConfigService,
     ) { }
 
+    async getMonitorStatus(monitorToken: string) {
+        const challenge = await this.repo.findOne({
+            where: { monitorToken },
+        });
+
+        if (!challenge) {
+            throw new NotFoundException();
+        }
+
+        const status =
+            challenge.status === 'pending' && challenge.expiresAt < new Date()
+                ? 'expired'
+                : challenge.status;
+
+        return {
+            status,
+            createdAt: challenge.createdAt,
+            expiresAt: challenge.expiresAt,
+            completedAt: challenge.completedAt,
+        };
+    }
+
     async create(): Promise<{ challengeUrl: string; monitorUrl: string }> {
         const challengeToken = randomBytes(6).toString('base64url');
         const monitorToken = randomBytes(18).toString('base64url');

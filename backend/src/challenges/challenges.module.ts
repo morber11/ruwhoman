@@ -9,6 +9,7 @@ import { CaptchaService } from './captcha.service';
     imports: [TypeOrmModule.forFeature([Challenge])],
     controllers: [ChallengesController],
     providers: [ChallengesService, CaptchaService],
+    exports: [ChallengesService],
 })
 
 export class ChallengesModule { }

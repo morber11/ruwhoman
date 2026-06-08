@@ -1,35 +1,12 @@
-import { Controller, Get, Param, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Challenge } from '../challenges/challenge.entity';
+import { Controller, Get, Param } from '@nestjs/common';
+import { ChallengesService } from '../challenges/challenges.service';
 
 @Controller('monitor')
 export class MonitorController {
-    constructor(
-        @InjectRepository(Challenge)
-        private readonly repo: Repository<Challenge>,
-    ) { }
+    constructor(private readonly service: ChallengesService) { }
 
     @Get(':token')
-    async getStatus(@Param('token') token: string) {
-        const challenge = await this.repo.findOne({
-            where: { monitorToken: token },
-        });
-
-        if (!challenge) {
-            throw new NotFoundException();
-        }
-
-        const status =
-            challenge.status === 'pending' && challenge.expiresAt < new Date()
-                ? 'expired'
-                : challenge.status;
-
-        return {
-            status,
-            createdAt: challenge.createdAt,
-            expiresAt: challenge.expiresAt,
-            completedAt: challenge.completedAt,
-        };
+    getStatus(@Param('token') token: string) {
+        return this.service.getMonitorStatus(token);
     }
 }
