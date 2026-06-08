@@ -1,0 +1,8 @@
+{
+    "name": "ruwhoman",
+    "private": true,
+    "workspaces": [
+        "backend",
+        "frontend"
+    ]
+}

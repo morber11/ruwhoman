@@ -1,0 +1,38 @@
+/* using BEM */
+.container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.header {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 16px 0;
+    margin-bottom: 64px;
+}
+
+.header__inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    letter-spacing: -0.01em;
+}
+
+@media (max-width: 640px) {
+    .header {
+        margin-bottom: 40px;
+    }
+
+    .container {
+        padding: 0 16px;
+    }
+}
