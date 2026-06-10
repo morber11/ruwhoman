@@ -6,7 +6,7 @@ One-time CAPTCHA style link service. No login required
 
 Someone added me on Discord and I had no idea who they were so I made this to check if they're actually a human and not a bot. Only does basic maths as an approximation of a CAPTCHA for now (which any bot can easily break) but I'll add some fancy ones later
 
-Experimenting with a monorepo + nest.js for backend
+Experimenting with a monorepo using Turborepo. React frontend / Nest.js backend
 
 ## Stack
 
