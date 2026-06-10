@@ -1,4 +1,5 @@
-﻿import { Test, TestingModule } from '@nestjs/testing';
+﻿import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { mock } from 'jest-mock-extended';
@@ -9,7 +10,7 @@ import {
     NotFoundException,
     ConflictException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import type { Repository } from 'typeorm';
 
 const makeChallenge = (
     overrides: Partial<Challenge> = {},
@@ -65,7 +66,7 @@ describe('ChallengesService', () => {
             const after = Date.now();
 
             expect(repo.save).toHaveBeenCalledTimes(1);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+             
             const saved = (repo.save as jest.Mock).mock.calls[0][0] as Partial<Challenge>;
             expect(saved.expiresAt!.getTime()).toBeGreaterThanOrEqual(
                 before + 24 * 60 * 60 * 1000 - 1000,
@@ -120,7 +121,7 @@ describe('ChallengesService', () => {
             expect(result).toEqual({ passed: true });
             expect(repo.update).toHaveBeenCalledWith('uuid', {
                 status: 'passed',
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                 
                 completedAt: expect.any(Date),
             });
         });
@@ -133,7 +134,7 @@ describe('ChallengesService', () => {
             expect(result).toEqual({ passed: false });
             expect(repo.update).toHaveBeenCalledWith('uuid', {
                 status: 'failed',
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                 
                 completedAt: expect.any(Date),
             });
         });

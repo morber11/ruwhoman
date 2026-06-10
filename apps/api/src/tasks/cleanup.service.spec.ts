@@ -1,9 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { mock } from 'jest-mock-extended';
 import { CleanupService } from './cleanup.service';
 import { Challenge } from '../challenges/challenge.entity';
-import { Repository } from 'typeorm';
+import type { Repository } from 'typeorm';
 
 describe('CleanupService', () => {
     let service: CleanupService;
@@ -33,7 +34,7 @@ describe('CleanupService', () => {
 
 
             expect(repo.delete).toHaveBeenCalledWith({
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                 
                 expiresAt: expect.anything(),
             });
         });

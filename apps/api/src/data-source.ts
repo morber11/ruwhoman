@@ -1,5 +1,6 @@
 import 'dotenv/config';
-import { DataSource, DataSourceOptions } from 'typeorm';
+import type { DataSourceOptions } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { Challenge } from './challenges/challenge.entity';
 
 const options: DataSourceOptions = {

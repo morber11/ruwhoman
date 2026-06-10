@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { Button, Typography, TextField, Box, CircularProgress } from '@mui/material';
-import { request, ApiError } from '../../api/client';
+import { request, type ApiError } from '../../api/client';
 
 const minDuration = <T,>(promise: Promise<T>, ms: number): Promise<T> => {
     const start = Date.now();
