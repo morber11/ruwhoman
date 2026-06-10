@@ -1,0 +1,30 @@
+{
+    "extends": [
+        "//"
+    ],
+    "tasks": {
+        "build": {
+            "env": [
+                "DATABASE_URL",
+                "FRONTEND_URL",
+                "PORT"
+            ],
+            "inputs": [
+                "$TURBO_DEFAULT$",
+                ".env"
+            ]
+        },
+        "dev": {
+            "inputs": [
+                "$TURBO_DEFAULT$",
+                ".env"
+            ]
+        },
+        "test": {
+            "env": [
+                "DATABASE_URL",
+                "FRONTEND_URL"
+            ]
+        }
+    }
+}

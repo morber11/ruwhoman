@@ -1,0 +1,22 @@
+{
+    "extends": [
+        "//"
+    ],
+    "tasks": {
+        "build": {
+            "env": [
+                "VITE_API_URL"
+            ],
+            "inputs": [
+                "$TURBO_DEFAULT$",
+                ".env"
+            ]
+        },
+        "dev": {
+            "inputs": [
+                "$TURBO_DEFAULT$",
+                ".env"
+            ]
+        }
+    }
+}

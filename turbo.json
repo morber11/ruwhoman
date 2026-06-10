@@ -1,4 +1,16 @@
 {
+    "globalDependencies": [
+        ".env"
+    ],
+    "globalPassThroughEnv": [
+        "COMSPEC",
+        "PATHEXT",
+        "PATH",
+        "USERPROFILE",
+        "APPDATA",
+        "TMP",
+        "TEMP"
+    ],
     "tasks": {
         "build": {
             "dependsOn": [
