@@ -21,6 +21,7 @@ import { CleanupService } from './tasks/cleanup.service';
                 url: config.get<string>('DATABASE_URL'),
                 autoLoadEntities: true,
                 synchronize: false,
+                retryAttempts: 3,
             }),
             inject: [ConfigService],
         }),
