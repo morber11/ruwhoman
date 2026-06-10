@@ -1,3 +1,4 @@
+import { sharedRules } from '@ruwhoman/eslint-config'
 import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -32,10 +33,7 @@ export default defineConfig([
             },
         },
         rules: {
-            'no-var': 'error',
-            'prefer-const': 'error',
-            '@typescript-eslint/no-explicit-any': 'error',
-            '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+            ...sharedRules,
         },
     },
 ])
