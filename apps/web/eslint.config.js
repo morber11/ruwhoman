@@ -17,6 +17,19 @@ export default defineConfig([
         ],
         languageOptions: {
             globals: globals.browser,
+            parserOptions: {
+                projectService: {
+                    allowDefaultProject: [
+                        'jest.config.ts',
+                        'src/test-setup.ts',
+                        'src/test-utils.tsx',
+                        'src/features/challenge/ChallengePage.test.tsx',
+                        'src/features/create/CreatePage.test.tsx',
+                        'src/features/monitor/MonitorPage.test.tsx',
+                    ],
+                },
+                tsconfigRootDir: import.meta.dirname,
+            },
         },
         rules: {
             'no-var': 'error',

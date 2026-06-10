@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Typography, Box, Chip } from '@mui/material';
 import type { ChipProps } from '@mui/material';
 import { request } from '../../api/client';
-import type { MonitorStatus } from '../../api/client';
+import type { MonitorStatus } from '@ruwhoman/shared';
 
 const STATUS_LABEL: Record<string, string> = {
     pending: 'Waiting for response',

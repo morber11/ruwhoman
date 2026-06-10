@@ -1,8 +1,19 @@
 {
     "name": "ruwhoman",
     "private": true,
+    "packageManager": "npm@11.3.0",
     "workspaces": [
-        "backend",
-        "frontend"
-    ]
+        "apps/*",
+        "packages/*"
+    ],
+    "scripts": {
+        "dev": "turbo dev --env-mode=loose",
+        "build": "turbo build --env-mode=loose",
+        "test": "turbo test --env-mode=loose",
+        "lint": "turbo lint --env-mode=loose",
+        "check-types": "turbo check-types --env-mode=loose"
+    },
+    "devDependencies": {
+        "turbo": "^2.7.0"
+    }
 }

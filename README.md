@@ -22,15 +22,15 @@ Both are using Jest for tests
 
 ## Environment
 
-Create `backend/.env` and `frontend/.env` before running. See example files (`.env.example`)
+Create `apps/api/.env` and `apps/web/.env` before running. See example files (`.env.example`)
 
-**`backend/.env`**
+**`apps/api/.env`**
 
 - `DATABASE_URL` - PostgreSQL connection string, default `postgres://postgres:password@localhost:5432/ruwhoman`
 - `PORT` - API server port, default `3001`
 - `FRONTEND_URL` - Frontend origin for CORS, default `http://localhost:5173`
 
-**`frontend/.env`**
+**`apps/web/.env`**
 
 - `VITE_API_URL` - Backend API base URL, default `http://localhost:3001/api`
 
@@ -40,9 +40,18 @@ Create `backend/.env` and `frontend/.env` before running. See example files (`.e
 # Database - postgres for now
 createdb ruwhoman
 
-# Backend
-cd backend && npm install && npm run migration:run && npm run start:dev
+# Install all dependencies from root
+npm install
 
-# Frontend
-cd frontend && npm install && npm run dev
+# Run migrations
+npm run migration:run -w apps/api
+
+# Start both apps with Turborepo
+npm run dev
+
+# Or start individually
+npm run start:dev -w apps/api
+npm run dev -w apps/web
 ```
+
+Almost every script is run with `--env-mode=loose` because Turbo 2 freaks out at global env vars

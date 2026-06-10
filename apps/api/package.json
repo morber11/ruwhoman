@@ -7,8 +7,10 @@
     "license": "UNLICENSED",
     "scripts": {
         "build": "nest build",
+        "check-types": "tsc --noEmit",
         "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
         "start": "nest start",
+        "dev": "nest start",
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
         "start:prod": "node dist/main",
@@ -17,7 +19,7 @@
         "migration:revert": "nest build && node dist/run-migration.js revert",
         "migration:revert:no-build": "node dist/run-migration.js revert",
         "migration:add": "node scripts/create-migration.js",
-        "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+        "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\" --fix",
         "test": "jest",
         "test:watch": "jest --watch",
         "test:cov": "jest --coverage",
@@ -32,6 +34,7 @@
         "@nestjs/swagger": "^11.4.4",
         "@nestjs/throttler": "^6.5.0",
         "@nestjs/typeorm": "^11.0.1",
+        "@ruwhoman/shared": "*",
         "helmet": "^8.2.0",
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.1"
@@ -59,7 +62,7 @@
         "ts-loader": "^9.5.2",
         "ts-node": "^10.9.2",
         "tsconfig-paths": "^4.2.0",
-        "typescript": "^5.7.3",
+        "typescript": "^5.9.3",
         "typescript-eslint": "^8.20.0"
     },
     "jest": {

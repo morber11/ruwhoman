@@ -13,14 +13,7 @@ export class ApiError extends Error {
     }
 }
 
-export type ChallengeStatus = 'pending' | 'passed' | 'failed' | 'expired';
-
-export interface MonitorStatus {
-    status: ChallengeStatus;
-    createdAt: string;
-    expiresAt: string;
-    completedAt: string | null;
-}
+export type { ChallengeStatus, MonitorStatus } from '@ruwhoman/shared';
 
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const res = await fetch(`${BASE}${path}`, init);
