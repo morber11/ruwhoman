@@ -9,7 +9,14 @@ async function bootstrap() {
 
     app.use(helmet());
     app.setGlobalPrefix('api');
-    app.enableCors({ origin: process.env.FRONTEND_URL });
+
+    const frontendUrl = process.env.FRONTEND_URL;
+    if (frontendUrl) {
+        app.enableCors({ origin: frontendUrl });
+    } else {
+        console.warn('FRONTEND_URL is not set - CORS will be disabled');
+    }
+
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
     const config = new DocumentBuilder()
