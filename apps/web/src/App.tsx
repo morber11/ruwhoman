@@ -1,12 +1,14 @@
+import { lazy, Suspense } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
+import { CssBaseline, Skeleton, Box } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import CreatePage from './features/create/CreatePage';
-import ChallengePage from './features/challenge/ChallengePage';
-import MonitorPage from './features/monitor/MonitorPage';
-import NotFoundPage from './features/not-found/NotFoundPage';
+
+const CreatePage = lazy(() => import('./features/create/CreatePage'));
+const ChallengePage = lazy(() => import('./features/challenge/ChallengePage'));
+const MonitorPage = lazy(() => import('./features/monitor/MonitorPage'));
+const NotFoundPage = lazy(() => import('./features/not-found/NotFoundPage'));
 
 const theme = createTheme({
     palette: {
@@ -70,12 +72,20 @@ export default function App() {
                     <main className="container">
                         {/* error boundary might be overkill but oh well */}
                         <ErrorBoundary>
-                            <Routes>
-                                <Route path="/" element={<CreatePage />} />
-                                <Route path="/monitor/:token" element={<MonitorPage />} />
-                                <Route path="/:token" element={<ChallengePage />} />
-                                <Route path="*" element={<NotFoundPage />} />
-                            </Routes>
+                            <Suspense fallback={
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 8 }}>
+                                    <Skeleton variant="rounded" height={120} />
+                                    <Skeleton variant="rounded" height={56} />
+                                    <Skeleton variant="rounded" height={48} />
+                                </Box>
+                            }>
+                                <Routes>
+                                    <Route path="/" element={<CreatePage />} />
+                                    <Route path="/monitor/:token" element={<MonitorPage />} />
+                                    <Route path="/:token" element={<ChallengePage />} />
+                                    <Route path="*" element={<NotFoundPage />} />
+                                </Routes>
+                            </Suspense>
                         </ErrorBoundary>
                     </main>
                 </BrowserRouter>
