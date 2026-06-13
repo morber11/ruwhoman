@@ -17,6 +17,15 @@
                 "$TURBO_DEFAULT$",
                 ".env"
             ]
+        },
+        "test:e2e": {
+            "env": [
+                "VITE_API_URL"
+            ],
+            "inputs": [
+                "$TURBO_DEFAULT$",
+                ".env"
+            ]
         }
     }
 }

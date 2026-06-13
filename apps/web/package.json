@@ -9,6 +9,7 @@
         "check-types": "tsc -b --noEmit",
         "lint": "eslint .",
         "test": "jest",
+        "test:e2e": "playwright test",
         "preview": "vite preview"
     },
     "dependencies": {
@@ -26,6 +27,7 @@
     "devDependencies": {
         "@babel/core": "^7.29.0",
         "@eslint/js": "^10.0.1",
+        "@playwright/test": "^1.60.0",
         "@rolldown/plugin-babel": "^0.2.3",
         "@swc/core": "^1.15.40",
         "@swc/jest": "^0.2.39",

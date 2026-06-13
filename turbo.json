@@ -30,6 +30,7 @@
                 "^build"
             ]
         },
+        "test:e2e": {},
         "lint": {},
         "check-types": {
             "dependsOn": [

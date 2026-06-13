@@ -1,4 +1,5 @@
 .turbo
+test-results/
 # Logs
 logs
 npm-debug.log*

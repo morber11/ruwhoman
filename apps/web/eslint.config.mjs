@@ -20,8 +20,14 @@ export default defineConfig([
             globals: globals.browser,
             parserOptions: {
                 projectService: {
+                    maximumDefaultProjectFileMatchCount_THIS_WILL_SLOW_DOWN_LINTING: 20,
                     allowDefaultProject: [
                         'jest.config.ts',
+                        'playwright.config.ts',
+                        'e2e/create.spec.ts',
+                        'e2e/challenge.spec.ts',
+                        'e2e/monitor.spec.ts',
+                        'e2e/not-found.spec.ts',
                         'src/test-setup.ts',
                         'src/test-utils.tsx',
                         'src/features/challenge/ChallengePage.test.tsx',

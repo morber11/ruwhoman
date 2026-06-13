@@ -18,7 +18,7 @@ Experimenting with a monorepo using Turborepo. React frontend / Nest.js backend
   - TypeORM migrations for schema changes
   - CRON job runs at midnight to clean up expired challenges
 
-Both are using Jest for tests
+- **Testing:** Unit/component tests via Jest (both apps), E2E browser tests via Playwright (web only)
 
 ## Environment
 
@@ -53,5 +53,20 @@ npm run dev
 npm run start:dev -w apps/api
 npm run dev -w apps/web
 ```
+
+## Tests
+
+```bash
+# Run Jest unit tests (all apps)
+npm test
+
+# Run Playwright E2E tests (web only)
+npm run test:e2e -w apps/web
+
+# Open Playwright UI mode (web only)
+cd apps/web && npx playwright test --ui
+```
+
+E2E tests use `page.route()` to mock API responses. Playwright auto-starts the Vite dev server via its `webServer` config.
 
 Almost every script is run with `--env-mode=loose` because Turbo 2 freaks out at global env vars
