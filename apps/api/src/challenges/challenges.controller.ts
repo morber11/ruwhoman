@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { ChallengesService } from './challenges.service';
+import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { SubmitAnswerDto } from './dto/submit-answer.dto';
 
 @Controller('challenges')
@@ -7,8 +8,8 @@ export class ChallengesController {
     constructor(private readonly service: ChallengesService) { }
 
     @Post()
-    create() {
-        return this.service.create();
+    create(@Body() dto: CreateChallengeDto) {
+        return this.service.create(dto.type);
     }
 
     @Get(':token')

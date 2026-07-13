@@ -61,6 +61,24 @@ it('shows expired for 404', async () => {
     ).toBeInTheDocument();
 });
 
+it('renders text captcha and accepts answer', async () => {
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg"><text>abc12</text></svg>';
+
+    mockRequest
+        .mockResolvedValueOnce({ type: 'text', question: svg })
+        .mockResolvedValueOnce({ passed: true });
+
+    const { container } = renderAt('abc123');
+    await screen.findByRole('textbox');
+
+    expect(container.querySelector('svg')).toBeInTheDocument();
+
+    await userEvent.type(screen.getByRole('textbox'), 'abc12');
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+    expect(await screen.findByText(/correct/i)).toBeInTheDocument();
+});
+
 it('shows completed for 409', async () => {
     const err = new Error('409');
     (err as { status?: number }).status = 409;

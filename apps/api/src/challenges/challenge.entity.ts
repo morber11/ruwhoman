@@ -4,6 +4,7 @@ import {
     Entity,
     PrimaryGeneratedColumn,
 } from 'typeorm';
+import { CAPTCHA_TYPE_MATH } from '@ruwhoman/shared';
 
 export type ChallengeStatus = 'pending' | 'passed' | 'failed';
 
@@ -18,7 +19,7 @@ export class Challenge {
     @Column({ unique: true, length: 32 })
     monitorToken!: string;
 
-    @Column({ length: 20, default: 'math' })
+    @Column({ length: 20, default: CAPTCHA_TYPE_MATH })
     type!: string;
 
     @Column('text')

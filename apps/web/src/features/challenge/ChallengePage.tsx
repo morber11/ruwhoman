@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { Button, Typography, TextField, Box, CircularProgress } from '@mui/material';
 import { request, type ApiError } from '../../api/client';
+import { CAPTCHA_TYPE_TEXT } from '@ruwhoman/shared';
 
 const minDuration = <T,>(promise: Promise<T>, ms: number): Promise<T> => {
     const start = Date.now();
@@ -52,8 +53,8 @@ export default function ChallengePage() {
 
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
-            if (e.key === 'Enter' 
-                && input.trim() 
+            if (e.key === 'Enter'
+                && input.trim()
                 && !mutation.isPending) {
                 mutation.mutate(input);
             }
@@ -116,9 +117,17 @@ export default function ChallengePage() {
 
     return (
         <Box sx={{ maxWidth: 400, mx: 'auto', textAlign: 'center' }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                {data.question}
-            </Typography>
+            {data.type === CAPTCHA_TYPE_TEXT ? (
+                <Box
+                    component="div"
+                    dangerouslySetInnerHTML={{ __html: data.question }}
+                    sx={{ mb: 2, lineHeight: 0 }}
+                />
+            ) : (
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
+                    {data.question}
+                </Typography>
+            )}
             <TextField
                 fullWidth
                 value={input}

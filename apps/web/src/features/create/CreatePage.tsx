@@ -1,10 +1,23 @@
-import { Button, Typography, Box, Snackbar, IconButton, CircularProgress } from '@mui/material';
+import {
+    Button,
+    Typography,
+    Box,
+    Snackbar,
+    IconButton,
+    CircularProgress,
+    Radio,
+    RadioGroup,
+    FormControlLabel,
+} from '@mui/material';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 import OpenInNew from '@mui/icons-material/OpenInNew';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import ExpandLess from '@mui/icons-material/ExpandLess';
 import { useState } from 'react';
 import debounce from '@mui/utils/debounce';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { request } from '../../api/client';
+import { CAPTCHA_TYPE_MATH, CAPTCHA_TYPE_TEXT } from '@ruwhoman/shared';
 import { MonitorStatusCard } from '../monitor/MonitorStatusCard';
 
 const minDuration = <T,>(promise: Promise<T>, ms: number): Promise<T> => {
@@ -20,16 +33,23 @@ const minDuration = <T,>(promise: Promise<T>, ms: number): Promise<T> => {
 
 export default function CreatePage() {
     const [copied, setCopied] = useState(false);
+    const [showAdvanced, setShowAdvanced] = useState(false);
+    const [captchaType, setCaptchaType] = useState<string>('');
     const queryClient = useQueryClient();
 
     const mutation = useMutation<{ challengeUrl: string; monitorUrl: string }>({
-        mutationFn: () =>
-            minDuration(
+        mutationFn: () => {
+            const body = captchaType ? { type: captchaType } : {};
+
+            return minDuration(
                 request('/challenges', {
                     method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
                 }),
                 300 + Math.random() * 300,
-            ),
+            );
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['challenge'] });
         },
@@ -75,6 +95,39 @@ export default function CreatePage() {
                     Create a Challenge
                 </Button>
             )}
+
+            <Box sx={{ mt: 2 }}>
+                <Typography
+                    variant="body2"
+                    onClick={() => setShowAdvanced(!showAdvanced)}
+                    sx={{
+                        cursor: 'pointer',
+                        color: 'text.secondary',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 0.25,
+                        '&:hover': { color: 'text.primary' },
+                    }}
+                >
+                    Advanced options
+                    {showAdvanced ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+                </Typography>
+                {showAdvanced && (
+                    <Box sx={{ mt: 1.5, textAlign: 'left' }}>
+                        <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', display: 'block', mb: 0.5 }}>
+                            Captcha type
+                        </Typography>
+                        <RadioGroup
+                            value={captchaType}
+                            onChange={(e) => setCaptchaType(e.target.value)}
+                        >
+                            <FormControlLabel value="" control={<Radio size="small" />} label="Random" />
+                            <FormControlLabel value={CAPTCHA_TYPE_MATH} control={<Radio size="small" />} label="Math" />
+                            <FormControlLabel value={CAPTCHA_TYPE_TEXT} control={<Radio size="small" />} label="Text" />
+                        </RadioGroup>
+                    </Box>
+                )}
+            </Box>
 
             {mutation.isError && (
                 <Typography color="error" variant="body2" sx={{ mt: 2 }}>

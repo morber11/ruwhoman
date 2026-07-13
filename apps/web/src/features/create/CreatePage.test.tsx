@@ -28,3 +28,24 @@ it('calls the API on click and shows URLs', async () => {
         await screen.findByText('http://example.com/abc'),
     ).toBeInTheDocument();
 });
+
+it('sends captcha type when selected in advanced options', async () => {
+    mockCreate.mockResolvedValue({
+        challengeUrl: 'http://example.com/abc',
+        monitorUrl: 'http://example.com/monitor/xyz',
+    });
+
+    renderWithQuery(<CreatePage />);
+    await userEvent.click(screen.getByText(/advanced options/i));
+
+    await userEvent.click(screen.getByLabelText('Math'));
+    await userEvent.click(screen.getByRole('button', { name: /create/i }));
+
+    expect(mockCreate).toHaveBeenCalledWith(
+        '/challenges',
+        expect.objectContaining({
+            method: 'POST',
+            body: JSON.stringify({ type: 'math' }),
+        }),
+    );
+});

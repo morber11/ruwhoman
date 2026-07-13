@@ -38,10 +38,11 @@ export class ChallengesService {
         };
     }
 
-    async create(): Promise<{ challengeUrl: string; monitorUrl: string }> {
+    async create(type?: string): Promise<{ challengeUrl: string; monitorUrl: string }> {
         const challengeToken = randomBytes(6).toString('base64url');
         const monitorToken = randomBytes(18).toString('base64url');
-        const captcha = this.captcha.generate();
+
+        const captcha = this.captcha.generate(type);
         const now = new Date(); // Date is fine because we're stored it as timestamptz
 
         await this.repo.save({
