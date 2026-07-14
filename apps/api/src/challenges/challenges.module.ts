@@ -4,11 +4,12 @@ import { Challenge } from './challenge.entity';
 import { ChallengesController } from './challenges.controller';
 import { ChallengesService } from './challenges.service';
 import { CaptchaService } from './captcha.service';
+import { SliderService } from './slider.service';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Challenge])],
     controllers: [ChallengesController],
-    providers: [ChallengesService, CaptchaService],
+    providers: [ChallengesService, CaptchaService, SliderService],
     exports: [ChallengesService],
 })
 

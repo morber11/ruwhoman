@@ -3,7 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { Button, Typography, TextField, Box, CircularProgress } from '@mui/material';
 import { request, type ApiError } from '../../api/client';
-import { CAPTCHA_TYPE_TEXT } from '@ruwhoman/shared';
+import { CaptchaType } from '@ruwhoman/shared';
+import SliderCaptcha from './SliderCaptcha';
 
 const minDuration = <T,>(promise: Promise<T>, ms: number): Promise<T> => {
     const start = Date.now();
@@ -27,9 +28,12 @@ export default function ChallengePage() {
     const { data, isPending, isError, error } = useQuery({
         queryKey: ['challenge', token],
         queryFn: () =>
-            request<{ type: string; question: string }>(
-                `/challenges/${token!}`,
-            ),
+            request<{
+                type: string;
+                question: string;
+                pieceWidth?: number;
+                imageWidth?: number;
+            }>(`/challenges/${token!}`),
         enabled: !!token,
     });
 
@@ -117,41 +121,53 @@ export default function ChallengePage() {
 
     return (
         <Box sx={{ maxWidth: 400, mx: 'auto', textAlign: 'center' }}>
-            {data.type === CAPTCHA_TYPE_TEXT ? (
-                <Box
-                    component="div"
-                    dangerouslySetInnerHTML={{ __html: data.question }}
-                    sx={{ mb: 2, lineHeight: 0 }}
+            {data.type === CaptchaType.SLIDER ? (
+                <SliderCaptcha
+                    token={token!}
+                    pieceWidth={data.pieceWidth!}
+                    imageWidth={data.imageWidth!}
+                    onSubmit={(answer) => mutation.mutate(answer)}
+                    isPending={mutation.isPending}
                 />
             ) : (
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                    {data.question}
-                </Typography>
+                <>
+                    {data.type === CaptchaType.TEXT ? (
+                        <Box
+                            component="div"
+                            dangerouslySetInnerHTML={{ __html: data.question }}
+                            sx={{ mb: 2, lineHeight: 0 }}
+                        />
+                    ) : (
+                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
+                            {data.question}
+                        </Typography>
+                    )}
+                    <TextField
+                        fullWidth
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        disabled={mutation.isPending}
+                        placeholder="Enter your answer"
+                        size="small"
+                        sx={{ mb: 2 }}
+                    />
+                    <Button
+                        variant="contained"
+                        onClick={() => mutation.mutate(input)}
+                        disabled={mutation.isPending || !input.trim()}
+                        sx={{ gap: 1.5 }}
+                    >
+                        {mutation.isPending ? (
+                            <>
+                                <CircularProgress size={16} color="inherit" />
+                                Submitting...
+                            </>
+                        ) : (
+                            'Submit'
+                        )}
+                    </Button>
+                </>
             )}
-            <TextField
-                fullWidth
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                disabled={mutation.isPending}
-                placeholder="Enter your answer"
-                size="small"
-                sx={{ mb: 2 }}
-            />
-            <Button
-                variant="contained"
-                onClick={() => mutation.mutate(input)}
-                disabled={mutation.isPending || !input.trim()}
-                sx={{ gap: 1.5 }}
-            >
-                {mutation.isPending ? (
-                    <>
-                        <CircularProgress size={16} color="inherit" />
-                        Submitting...
-                    </>
-                ) : (
-                    'Submit'
-                )}
-            </Button>
         </Box>
     );
 }

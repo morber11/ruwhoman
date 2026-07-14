@@ -1,6 +1,6 @@
-const BASE = import.meta.env.VITE_API_URL;
+export const API_BASE = import.meta.env.VITE_API_URL;
 
-if (!BASE) {
+if (!API_BASE) {
     throw new Error('VITE_API_URL is not set');
 }
 
@@ -16,7 +16,7 @@ export class ApiError extends Error {
 export type { ChallengeStatus, MonitorStatus } from '@ruwhoman/shared';
 
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
-    const res = await fetch(`${BASE}${path}`, init);
+    const res = await fetch(`${API_BASE}${path}`, init);
 
     if (!res.ok) throw new ApiError(res.status);
 

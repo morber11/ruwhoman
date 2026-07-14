@@ -8,6 +8,10 @@
             {
                 "include": "**/*.ttf",
                 "watchAssets": true
+            },
+            {
+                "include": "**/*.jpg",
+                "watchAssets": true
             }
         ]
     }

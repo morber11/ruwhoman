@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { mock } from 'jest-mock-extended';
 import { ChallengesService } from './challenges.service';
 import { CaptchaService } from './captcha.service';
+import { SliderService } from './slider.service';
 import { Challenge } from './challenge.entity';
 import {
     NotFoundException,
@@ -39,6 +40,7 @@ describe('ChallengesService', () => {
             providers: [
                 ChallengesService,
                 CaptchaService,
+                SliderService,
                 {
                     provide: getRepositoryToken(Challenge),
                     useValue: repo,
@@ -66,7 +68,7 @@ describe('ChallengesService', () => {
             const after = Date.now();
 
             expect(repo.save).toHaveBeenCalledTimes(1);
-             
+
             const saved = (repo.save as jest.Mock).mock.calls[0][0] as Partial<Challenge>;
             expect(saved.expiresAt!.getTime()).toBeGreaterThanOrEqual(
                 before + 24 * 60 * 60 * 1000 - 1000,
@@ -121,7 +123,7 @@ describe('ChallengesService', () => {
             expect(result).toEqual({ passed: true });
             expect(repo.update).toHaveBeenCalledWith('uuid', {
                 status: 'passed',
-                 
+
                 completedAt: expect.any(Date),
             });
         });
@@ -134,7 +136,7 @@ describe('ChallengesService', () => {
             expect(result).toEqual({ passed: false });
             expect(repo.update).toHaveBeenCalledWith('uuid', {
                 status: 'failed',
-                 
+
                 completedAt: expect.any(Date),
             });
         });

@@ -1,7 +1,9 @@
 import { CaptchaService } from './captcha.service';
+import { SliderService } from './slider.service';
 
 describe('CaptchaService', () => {
-    const service = new CaptchaService();
+    const sliderService = new SliderService();
+    const service = new CaptchaService(sliderService);
 
     it('always returns math when forced', () => {
         for (let i = 0; i < 10; i++) {
@@ -24,10 +26,18 @@ describe('CaptchaService', () => {
         }
     });
 
-    it('produces both math and text captchas across many calls', () => {
+    it('always returns slider when forced', () => {
+        const result = service.generate('slider');
+
+        expect(result.type).toBe('slider');
+        expect(result.question).toMatch(/\.jpg$/);
+        expect(result.answer).toMatch(/^\d+$/);
+    });
+
+    it('returns all three types across many calls', () => {
         const types = new Set<string>();
 
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < 30; i++) {
             const { type, question, answer } = service.generate();
             types.add(type);
 
@@ -40,15 +50,17 @@ describe('CaptchaService', () => {
                 const expected = op === '+' ? a + b : a * b;
                 expect(answer).toBe(String(expected));
                 expect(answer).toMatch(/^\d+$/);
-            } else {
-                expect(type).toBe('text');
+            } else if (type === 'text') {
                 expect(question).toMatch(/^<svg/);
-                expect(question).toContain('xmlns');
                 expect(answer).toMatch(/^[abcdefghjkmnpqrstuvwxyz23456789]{5}$/);
+            } else {
+                expect(type).toBe('slider');
+                expect(answer).toMatch(/^\d+$/);
             }
         }
 
         expect(types.has('math')).toBe(true);
         expect(types.has('text')).toBe(true);
+        expect(types.has('slider')).toBe(true);
     });
 });

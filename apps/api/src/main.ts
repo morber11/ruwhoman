@@ -10,7 +10,7 @@ async function bootstrap() {
 
     const configService = app.get(ConfigService);
 
-    app.use(helmet());
+    app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
     app.setGlobalPrefix('api');
 
     const frontendUrl = configService.get<string>('FRONTEND_URL');

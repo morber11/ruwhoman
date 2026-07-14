@@ -17,7 +17,7 @@ import { useState } from 'react';
 import debounce from '@mui/utils/debounce';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { request } from '../../api/client';
-import { CAPTCHA_TYPE_MATH, CAPTCHA_TYPE_TEXT } from '@ruwhoman/shared';
+import { CaptchaType } from '@ruwhoman/shared';
 import { MonitorStatusCard } from '../monitor/MonitorStatusCard';
 
 const minDuration = <T,>(promise: Promise<T>, ms: number): Promise<T> => {
@@ -122,8 +122,9 @@ export default function CreatePage() {
                             onChange={(e) => setCaptchaType(e.target.value)}
                         >
                             <FormControlLabel value="" control={<Radio size="small" />} label="Random" />
-                            <FormControlLabel value={CAPTCHA_TYPE_MATH} control={<Radio size="small" />} label="Math" />
-                            <FormControlLabel value={CAPTCHA_TYPE_TEXT} control={<Radio size="small" />} label="Text" />
+                            <FormControlLabel value={CaptchaType.MATH} control={<Radio size="small" />} label="Math" />
+                            <FormControlLabel value={CaptchaType.TEXT} control={<Radio size="small" />} label="Text" />
+                            <FormControlLabel value={CaptchaType.SLIDER} control={<Radio size="small" />} label="Slider" />
                         </RadioGroup>
                     </Box>
                 )}

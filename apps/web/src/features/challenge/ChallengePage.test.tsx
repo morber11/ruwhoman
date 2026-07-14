@@ -9,6 +9,7 @@ const mockRequest = jest.fn();
 
 jest.mock('../../api/client', () => ({
     request: (...args: unknown[]) => mockRequest(...args),
+    API_BASE: 'http://localhost:3001/api',
     ApiError: class extends Error {
         status: number;
         constructor(status: number) {
@@ -74,6 +75,26 @@ it('renders text captcha and accepts answer', async () => {
     expect(container.querySelector('svg')).toBeInTheDocument();
 
     await userEvent.type(screen.getByRole('textbox'), 'abc12');
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+    expect(await screen.findByText(/correct/i)).toBeInTheDocument();
+});
+
+it('renders slider captcha and submits the slider position', async () => {
+    mockRequest
+        .mockResolvedValueOnce({
+            type: 'slider',
+            pieceWidth: 50,
+            imageWidth: 400,
+        })
+        .mockResolvedValueOnce({ passed: true });
+
+    renderAt('abc123');
+    await screen.findByRole('slider');
+
+    const images = screen.getAllByRole('img');
+    expect(images).toHaveLength(2);
+
     await userEvent.click(screen.getByRole('button', { name: /submit/i }));
 
     expect(await screen.findByText(/correct/i)).toBeInTheDocument();

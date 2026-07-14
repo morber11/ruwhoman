@@ -70,3 +70,7 @@ cd apps/web && npx playwright test --ui
 E2E tests use `page.route()` to mock API responses. Playwright auto-starts the Vite dev server via its `webServer` config.
 
 Almost every script is run with `--env-mode=loose` because Turbo 2 freaks out at global env vars
+
+## Additional Notes
+
+Image processing done with [higurashify](https://rwbyrocks.github.io/higurashify/)

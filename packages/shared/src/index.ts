@@ -1,5 +1,8 @@
-export const CAPTCHA_TYPE_MATH = 'math';
-export const CAPTCHA_TYPE_TEXT = 'text';
+export const CaptchaType = {
+    MATH: 'math',
+    TEXT: 'text',
+    SLIDER: 'slider',
+} as const;
 
 export type ChallengeStatus = 'pending' | 'passed' | 'failed' | 'expired';
 

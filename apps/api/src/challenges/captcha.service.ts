@@ -1,21 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import * as svgCaptcha from 'svg-captcha';
 import { join } from 'path';
-import { CAPTCHA_TYPE_MATH, CAPTCHA_TYPE_TEXT } from '@ruwhoman/shared';
+import { SliderService } from './slider.service';
+import { CaptchaType } from '@ruwhoman/shared';
 
 interface MathCaptcha {
-    type: typeof CAPTCHA_TYPE_MATH;
+    type: typeof CaptchaType.MATH;
     question: string;
     answer: string;
 }
 
 interface TextCaptcha {
-    type: typeof CAPTCHA_TYPE_TEXT;
+    type: typeof CaptchaType.TEXT;
     question: string;
     answer: string;
 }
 
-type Captcha = MathCaptcha | TextCaptcha;
+interface SliderCaptcha {
+    type: typeof CaptchaType.SLIDER;
+    question: string;
+    answer: string;
+}
+
+type Captcha = MathCaptcha | TextCaptcha | SliderCaptcha;
 
 @Injectable()
 export class CaptchaService {
@@ -25,17 +32,19 @@ export class CaptchaService {
         join(__dirname, 'fonts', 'SpaceMono.ttf'),
     ];
 
-    private nextIsMath = Math.random() < 0.5;
+    private typeIndex = 0;
+    private readonly types = Object.values(CaptchaType);
+
+    constructor(private readonly sliderService: SliderService) { }
 
     private nextType() {
-        this.nextIsMath = !this.nextIsMath;
-        return this.nextIsMath ? CAPTCHA_TYPE_MATH : CAPTCHA_TYPE_TEXT;
+        return this.types[this.typeIndex++ % this.types.length];
     }
 
     generate(type?: string): Captcha {
         const resolvedType = type ?? this.nextType();
 
-        if (resolvedType === CAPTCHA_TYPE_MATH) {
+        if (resolvedType === CaptchaType.MATH) {
             const a = Math.floor(Math.random() * 12) + 1;
             const b = Math.floor(Math.random() * 12) + 1;
 
@@ -43,22 +52,29 @@ export class CaptchaService {
             const answer = op === '+' ? a + b : a * b;
 
             return {
-                type: CAPTCHA_TYPE_MATH,
+                type: CaptchaType.MATH,
                 question: `What is ${a} ${op} ${b}?`,
                 answer: String(answer),
             };
         }
 
-        const fontPath = this.fonts[Math.floor(Math.random() * this.fonts.length)];
-        svgCaptcha.loadFont(fontPath);
+        if (resolvedType === CaptchaType.SLIDER) {
+            return this.sliderService.generate();
+        }
 
-        const captcha = svgCaptcha.create({ size: 5, noise: 2, color: true, charPreset: 'abcdefghjkmnpqrstuvwxyz23456789' });
+        if (resolvedType === CaptchaType.TEXT) {
+            const fontPath = this.fonts[Math.floor(Math.random() * this.fonts.length)];
+            svgCaptcha.loadFont(fontPath);
 
-        // fallback is text captcha, maybe consider making this explicit
-        return {
-            type: CAPTCHA_TYPE_TEXT,
-            question: captcha.data,
-            answer: captcha.text,
-        };
+            const captcha = svgCaptcha.create({ size: 5, noise: 2, color: true, charPreset: 'abcdefghjkmnpqrstuvwxyz23456789' });
+
+            return {
+                type: CaptchaType.TEXT,
+                question: captcha.data,
+                answer: captcha.text,
+            };
+        }
+
+        throw new Error(`unknown captcha type: ${resolvedType}`);
     }
 }
