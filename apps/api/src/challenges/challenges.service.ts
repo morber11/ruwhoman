@@ -3,9 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Challenge } from './challenge.entity';
 import { CaptchaService } from './captcha.service';
+import { RecaptchaService } from '../recaptcha/recaptcha.service';
 import { randomBytes } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { ConflictException } from '@nestjs/common';
+import { CaptchaType } from '@ruwhoman/shared';
 
 @Injectable()
 export class ChallengesService {
@@ -13,6 +15,7 @@ export class ChallengesService {
         @InjectRepository(Challenge)
         private readonly repo: Repository<Challenge>,
         private readonly captcha: CaptchaService,
+        private readonly recaptcha: RecaptchaService,
         private readonly config: ConfigService,
     ) { }
 
@@ -83,7 +86,10 @@ export class ChallengesService {
 
     async submit(token: string, answer: string): Promise<{ passed: boolean }> {
         const challenge = await this.getByToken(token);
-        const passed = answer.trim() === challenge.answer;
+
+        const passed = challenge.type === CaptchaType.RECAPTCHA
+            ? await this.recaptcha.verify(answer)
+            : answer.trim() === challenge.answer;
 
         await this.repo.update(challenge.id, {
             status: passed ? 'passed' : 'failed',

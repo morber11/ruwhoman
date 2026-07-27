@@ -5,9 +5,10 @@ import { ChallengesController } from './challenges.controller';
 import { ChallengesService } from './challenges.service';
 import { CaptchaService } from './captcha.service';
 import { SliderService } from './slider.service';
+import { RecaptchaModule } from '../recaptcha/recaptcha.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Challenge])],
+    imports: [TypeOrmModule.forFeature([Challenge]), RecaptchaModule],
     controllers: [ChallengesController],
     providers: [ChallengesService, CaptchaService, SliderService],
     exports: [ChallengesService],

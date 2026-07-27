@@ -22,7 +22,13 @@ interface SliderCaptcha {
     answer: string;
 }
 
-type Captcha = MathCaptcha | TextCaptcha | SliderCaptcha;
+interface RecaptchaCaptcha {
+    type: typeof CaptchaType.RECAPTCHA;
+    question: string;
+    answer: string;
+}
+
+type Captcha = MathCaptcha | TextCaptcha | SliderCaptcha | RecaptchaCaptcha;
 
 @Injectable()
 export class CaptchaService {
@@ -72,6 +78,14 @@ export class CaptchaService {
                 type: CaptchaType.TEXT,
                 question: captcha.data,
                 answer: captcha.text,
+            };
+        }
+
+        if (resolvedType === CaptchaType.RECAPTCHA) {
+            return {
+                type: CaptchaType.RECAPTCHA,
+                question: '',
+                answer: '',
             };
         }
 

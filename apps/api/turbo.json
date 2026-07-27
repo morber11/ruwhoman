@@ -7,7 +7,8 @@
             "env": [
                 "DATABASE_URL",
                 "FRONTEND_URL",
-                "PORT"
+                "PORT",
+                "RECAPTCHA_SECRET_KEY"
             ],
             "inputs": [
                 "$TURBO_DEFAULT$",
@@ -23,7 +24,8 @@
         "test": {
             "env": [
                 "DATABASE_URL",
-                "FRONTEND_URL"
+                "FRONTEND_URL",
+                "RECAPTCHA_SECRET_KEY"
             ]
         }
     }

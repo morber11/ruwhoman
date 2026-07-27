@@ -5,6 +5,11 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import ChallengePage from './ChallengePage';
 
+jest.mock('./ReCaptchaChallenge', () => ({
+    __esModule: true,
+    default: () => null,
+}));
+
 const mockRequest = jest.fn();
 
 jest.mock('../../api/client', () => ({
@@ -72,7 +77,7 @@ it('renders text captcha and accepts answer', async () => {
     const { container } = renderAt('abc123');
     await screen.findByRole('textbox');
 
-    expect(container.querySelector('svg')).toBeInTheDocument();
+    expect(container.querySelector('img[alt="Captcha"]')).toBeInTheDocument();
 
     await userEvent.type(screen.getByRole('textbox'), 'abc12');
     await userEvent.click(screen.getByRole('button', { name: /submit/i }));

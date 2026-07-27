@@ -2,6 +2,7 @@ export const CaptchaType = {
     MATH: 'math',
     TEXT: 'text',
     SLIDER: 'slider',
+    RECAPTCHA: 'recaptcha',
 } as const;
 
 export type ChallengeStatus = 'pending' | 'passed' | 'failed' | 'expired';

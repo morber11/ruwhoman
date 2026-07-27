@@ -5,6 +5,7 @@ import { Button, Typography, TextField, Box, CircularProgress } from '@mui/mater
 import { request, type ApiError } from '../../api/client';
 import { CaptchaType } from '@ruwhoman/shared';
 import SliderCaptcha from './SliderCaptcha';
+import ReCaptchaChallenge from './ReCaptchaChallenge';
 
 const svgToDataUri = (svg: string) =>
     `data:image/svg+xml;base64,${btoa(
@@ -131,6 +132,11 @@ export default function ChallengePage() {
                     token={token!}
                     pieceWidth={data.pieceWidth!}
                     imageWidth={data.imageWidth!}
+                    onSubmit={(answer) => mutation.mutate(answer)}
+                    isPending={mutation.isPending}
+                />
+            ) : data.type === CaptchaType.RECAPTCHA ? (
+                <ReCaptchaChallenge
                     onSubmit={(answer) => mutation.mutate(answer)}
                     isPending={mutation.isPending}
                 />
