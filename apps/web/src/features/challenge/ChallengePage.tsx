@@ -6,6 +6,11 @@ import { request, type ApiError } from '../../api/client';
 import { CaptchaType } from '@ruwhoman/shared';
 import SliderCaptcha from './SliderCaptcha';
 
+const svgToDataUri = (svg: string) =>
+    `data:image/svg+xml;base64,${btoa(
+        String.fromCharCode(...new Uint8Array(new TextEncoder().encode(svg))),
+    )}`;
+
 const minDuration = <T,>(promise: Promise<T>, ms: number): Promise<T> => {
     const start = Date.now();
 
@@ -133,9 +138,10 @@ export default function ChallengePage() {
                 <>
                     {data.type === CaptchaType.TEXT ? (
                         <Box
-                            component="div"
-                            dangerouslySetInnerHTML={{ __html: data.question }}
-                            sx={{ mb: 2, lineHeight: 0 }}
+                            component="img"
+                            src={svgToDataUri(data.question)}
+                            alt="Captcha"
+                            sx={{ mb: 2, display: 'block', mx: 'auto', maxWidth: '100%' }}
                         />
                     ) : (
                         <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
