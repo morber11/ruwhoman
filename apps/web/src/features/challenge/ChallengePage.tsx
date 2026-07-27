@@ -1,16 +1,12 @@
-import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { Button, Typography, TextField, Box, CircularProgress } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import { request, type ApiError } from '../../api/client';
 import { CaptchaType } from '@ruwhoman/shared';
 import SliderCaptcha from './SliderCaptcha';
 import ReCaptchaChallenge from './ReCaptchaChallenge';
-
-const svgToDataUri = (svg: string) =>
-    `data:image/svg+xml;base64,${btoa(
-        String.fromCharCode(...new Uint8Array(new TextEncoder().encode(svg))),
-    )}`;
+import TextCaptcha from './TextCaptcha';
+import MathCaptcha from './MathCaptcha';
 
 const minDuration = <T,>(promise: Promise<T>, ms: number): Promise<T> => {
     const start = Date.now();
@@ -28,7 +24,6 @@ const minDuration = <T,>(promise: Promise<T>, ms: number): Promise<T> => {
 
 export default function ChallengePage() {
     const { token } = useParams<{ token: string }>();
-    const [input, setInput] = useState('');
     const queryClient = useQueryClient();
 
     const { data, isPending, isError, error } = useQuery({
@@ -60,19 +55,6 @@ export default function ChallengePage() {
             });
         },
     });
-
-    useEffect(() => {
-        const handler = (e: KeyboardEvent) => {
-            if (e.key === 'Enter'
-                && input.trim()
-                && !mutation.isPending) {
-                mutation.mutate(input);
-            }
-        };
-
-        document.addEventListener('keydown', handler);
-        return () => document.removeEventListener('keydown', handler);
-    }, [input, mutation]);
 
     if (isPending) {
         return (
@@ -140,45 +122,18 @@ export default function ChallengePage() {
                     onSubmit={(answer) => mutation.mutate(answer)}
                     isPending={mutation.isPending}
                 />
+            ) : data.type === CaptchaType.TEXT ? (
+                <TextCaptcha
+                    question={data.question}
+                    onSubmit={(answer) => mutation.mutate(answer)}
+                    isPending={mutation.isPending}
+                />
             ) : (
-                <>
-                    {data.type === CaptchaType.TEXT ? (
-                        <Box
-                            component="img"
-                            src={svgToDataUri(data.question)}
-                            alt="Captcha"
-                            sx={{ mb: 2, display: 'block', mx: 'auto', maxWidth: '100%' }}
-                        />
-                    ) : (
-                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                            {data.question}
-                        </Typography>
-                    )}
-                    <TextField
-                        fullWidth
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        disabled={mutation.isPending}
-                        placeholder="Enter your answer"
-                        size="small"
-                        sx={{ mb: 2 }}
-                    />
-                    <Button
-                        variant="contained"
-                        onClick={() => mutation.mutate(input)}
-                        disabled={mutation.isPending || !input.trim()}
-                        sx={{ gap: 1.5 }}
-                    >
-                        {mutation.isPending ? (
-                            <>
-                                <CircularProgress size={16} color="inherit" />
-                                Submitting...
-                            </>
-                        ) : (
-                            'Submit'
-                        )}
-                    </Button>
-                </>
+                <MathCaptcha
+                    question={data.question}
+                    onSubmit={(answer) => mutation.mutate(answer)}
+                    isPending={mutation.isPending}
+                />
             )}
         </Box>
     );
