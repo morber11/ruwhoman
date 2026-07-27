@@ -1,12 +1,24 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { Typography, Box } from '@mui/material';
+import { Typography, Box, Fade } from '@mui/material';
+import { keyframes } from '@emotion/react';
 import { request, type ApiError } from '../../api/client';
 import { CaptchaType } from '@ruwhoman/shared';
 import SliderCaptcha from './SliderCaptcha';
 import ReCaptchaChallenge from './ReCaptchaChallenge';
 import TextCaptcha from './TextCaptcha';
 import MathCaptcha from './MathCaptcha';
+
+const resultEnter = keyframes`
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+`;
 
 const minDuration = <T,>(promise: Promise<T>, ms: number): Promise<T> => {
     const start = Date.now();
@@ -79,24 +91,6 @@ export default function ChallengePage() {
         );
     }
 
-    if (mutation.isSuccess) {
-        return (
-            <Typography
-                variant="body1"
-                sx={{
-                    textAlign: 'center',
-                    py: 4,
-                    color: mutation.data.passed ? 'success.main' : 'error.main',
-                    fontWeight: 500,
-                }}
-            >
-                {mutation.data.passed
-                    ? 'Correct! You are human'
-                    : 'Wrong answer. You may be a robot'}
-            </Typography>
-        );
-    }
-
     if (mutation.isError) {
         return (
             <Typography variant="body2" sx={{ color: 'error.main', textAlign: 'center', py: 4 }}>
@@ -108,32 +102,60 @@ export default function ChallengePage() {
     }
 
     return (
-        <Box sx={{ maxWidth: 400, mx: 'auto', textAlign: 'center' }}>
-            {data.type === CaptchaType.SLIDER ? (
-                <SliderCaptcha
-                    token={token!}
-                    pieceWidth={data.pieceWidth!}
-                    imageWidth={data.imageWidth!}
-                    onSubmit={(answer) => mutation.mutate(answer)}
-                    isPending={mutation.isPending}
-                />
-            ) : data.type === CaptchaType.RECAPTCHA ? (
-                <ReCaptchaChallenge
-                    onSubmit={(answer) => mutation.mutate(answer)}
-                    isPending={mutation.isPending}
-                />
-            ) : data.type === CaptchaType.TEXT ? (
-                <TextCaptcha
-                    question={data.question}
-                    onSubmit={(answer) => mutation.mutate(answer)}
-                    isPending={mutation.isPending}
-                />
-            ) : (
-                <MathCaptcha
-                    question={data.question}
-                    onSubmit={(answer) => mutation.mutate(answer)}
-                    isPending={mutation.isPending}
-                />
+        <Box sx={{ maxWidth: 400, mx: 'auto', textAlign: 'center', position: 'relative', minHeight: 200 }}>
+            <Fade in={!mutation.isSuccess} timeout={300}>
+                <Box sx={{ position: 'absolute', width: '100%' }}>
+                    {data.type === CaptchaType.SLIDER ? (
+                        <SliderCaptcha
+                            token={token!}
+                            pieceWidth={data.pieceWidth!}
+                            imageWidth={data.imageWidth!}
+                            onSubmit={(answer) => mutation.mutate(answer)}
+                            isPending={mutation.isPending}
+                        />
+                    ) : data.type === CaptchaType.RECAPTCHA ? (
+                        <ReCaptchaChallenge
+                            onSubmit={(answer) => mutation.mutate(answer)}
+                            isPending={mutation.isPending}
+                        />
+                    ) : data.type === CaptchaType.TEXT ? (
+                        <TextCaptcha
+                            question={data.question}
+                            onSubmit={(answer) => mutation.mutate(answer)}
+                            isPending={mutation.isPending}
+                        />
+                    ) : (
+                        <MathCaptcha
+                            question={data.question}
+                            onSubmit={(answer) => mutation.mutate(answer)}
+                            isPending={mutation.isPending}
+                        />
+                    )}
+                </Box>
+            </Fade>
+
+            {mutation.isSuccess && (
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        width: '100%',
+                        animation: `${resultEnter} 0.4s ease-out`,
+                    }}
+                >
+                    <Typography
+                        variant="body1"
+                        sx={{
+                            textAlign: 'center',
+                            py: 4,
+                            color: mutation.data.passed ? 'success.main' : 'error.main',
+                            fontWeight: 500,
+                        }}
+                    >
+                        {mutation.data.passed
+                            ? 'Correct! You are human'
+                            : 'Wrong answer. You may be a robot'}
+                    </Typography>
+                </Box>
             )}
         </Box>
     );
