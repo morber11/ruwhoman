@@ -9,6 +9,7 @@ import { randomBytes } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { ConflictException } from '@nestjs/common';
 import { CaptchaType } from '@ruwhoman/shared';
+import { SLIDER_TOLERANCE } from './slider.service';
 
 @Injectable()
 export class ChallengesService {
@@ -89,11 +90,18 @@ export class ChallengesService {
     async submit(token: string, answer: string): Promise<{ passed: boolean }> {
         const challenge = await this.getByToken(token);
 
-        const passed = challenge.type === CaptchaType.RECAPTCHA_V3
-            ? await this.recaptchaV3.verify(answer)
-            : challenge.type === CaptchaType.RECAPTCHA_V2
-            ? await this.recaptchaV2.verify(answer)
-            : answer.trim() === challenge.answer;
+        let passed: boolean;
+
+        // consider abstracting this at a separate point instead of if/else
+        if (challenge.type === CaptchaType.RECAPTCHA_V3) {
+            passed = await this.recaptchaV3.verify(answer);
+        } else if (challenge.type === CaptchaType.RECAPTCHA_V2) {
+            passed = await this.recaptchaV2.verify(answer);
+        } else if (challenge.type === CaptchaType.SLIDER) {
+            passed = Math.abs(Number(answer) - Number(challenge.answer)) <= SLIDER_TOLERANCE;
+        } else {
+            passed = answer.trim() === challenge.answer;
+        }
 
         await this.repo.update(challenge.id, {
             status: passed ? 'passed' : 'failed',

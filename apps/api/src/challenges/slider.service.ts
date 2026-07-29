@@ -21,6 +21,8 @@ interface SliderCaptcha {
 const PIECE_WIDTH = 50;
 const DISPLAY_WIDTH = 400;
 
+export const SLIDER_TOLERANCE = 4; // needed as otherwise it must be a pixel perfect match on the slider
+
 @Injectable()
 export class SliderService {
     private readonly imagesDir = join(__dirname, 'slider-images');
