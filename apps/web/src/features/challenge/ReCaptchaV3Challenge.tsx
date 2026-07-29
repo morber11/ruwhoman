@@ -1,24 +1,15 @@
 import { useEffect, useState, useRef } from 'react';
 import { Button, Box, Typography, CircularProgress } from '@mui/material';
 
-const SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+const SITE_KEY = import.meta.env.VITE_RECAPTCHA_V3_SITE_KEY;
 const RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api.js';
 
-declare global {
-    interface Window {
-        grecaptcha?: {
-            execute: (siteKey: string, options: { action: string }) => Promise<string>;
-            ready: (callback: () => void) => void;
-        };
-    }
-}
-
-interface ReCaptchaChallengeProps {
+interface ReCaptchaV3ChallengeProps {
     onSubmit: (answer: string) => void;
     isPending: boolean;
 }
 
-export default function ReCaptchaChallenge({ onSubmit, isPending }: ReCaptchaChallengeProps) {
+export default function ReCaptchaV3Challenge({ onSubmit, isPending }: ReCaptchaV3ChallengeProps) {
     const [scriptLoaded, setScriptLoaded] = useState(false);
     const [scriptError, setScriptError] = useState(false);
     const mountedRef = useRef(false);
@@ -77,7 +68,7 @@ export default function ReCaptchaChallenge({ onSubmit, isPending }: ReCaptchaCha
             )}
             {!SITE_KEY ? (
                 <Typography variant="body2" color="text.secondary">
-                    reCAPTCHA v3 is not configured. Set <code>VITE_RECAPTCHA_SITE_KEY</code> in your environment.
+                    reCAPTCHA v3 is not configured. Set <code>VITE_RECAPTCHA_V3_SITE_KEY</code> in your environment.
                 </Typography>
             ) : !scriptLoaded && !scriptError ? (
                 <CircularProgress size={24} />

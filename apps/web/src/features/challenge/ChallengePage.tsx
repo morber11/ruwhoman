@@ -5,7 +5,8 @@ import { keyframes } from '@emotion/react';
 import { request, type ApiError } from '../../api/client';
 import { CaptchaType } from '@ruwhoman/shared';
 import SliderCaptcha from './SliderCaptcha';
-import ReCaptchaChallenge from './ReCaptchaChallenge';
+import ReCaptchaV3Challenge from './ReCaptchaV3Challenge';
+import ReCaptchaV2Challenge from './ReCaptchaV2Challenge';
 import TextCaptcha from './TextCaptcha';
 import MathCaptcha from './MathCaptcha';
 
@@ -113,8 +114,13 @@ export default function ChallengePage() {
                             onSubmit={(answer) => mutation.mutate(answer)}
                             isPending={mutation.isPending}
                         />
-                    ) : data.type === CaptchaType.RECAPTCHA ? (
-                        <ReCaptchaChallenge
+                    ) : data.type === CaptchaType.RECAPTCHA_V3 ? (
+                        <ReCaptchaV3Challenge
+                            onSubmit={(answer) => mutation.mutate(answer)}
+                            isPending={mutation.isPending}
+                        />
+                    ) : data.type === CaptchaType.RECAPTCHA_V2 ? (
+                        <ReCaptchaV2Challenge
                             onSubmit={(answer) => mutation.mutate(answer)}
                             isPending={mutation.isPending}
                         />

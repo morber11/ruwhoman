@@ -22,13 +22,19 @@ interface SliderCaptcha {
     answer: string;
 }
 
-interface RecaptchaCaptcha {
-    type: typeof CaptchaType.RECAPTCHA;
+interface RecaptchaV3Captcha {
+    type: typeof CaptchaType.RECAPTCHA_V3;
     question: string;
     answer: string;
 }
 
-type Captcha = MathCaptcha | TextCaptcha | SliderCaptcha | RecaptchaCaptcha;
+interface RecaptchaV2Captcha {
+    type: typeof CaptchaType.RECAPTCHA_V2;
+    question: string;
+    answer: string;
+}
+
+type Captcha = MathCaptcha | TextCaptcha | SliderCaptcha | RecaptchaV3Captcha | RecaptchaV2Captcha;
 
 @Injectable()
 export class CaptchaService {
@@ -81,9 +87,17 @@ export class CaptchaService {
             };
         }
 
-        if (resolvedType === CaptchaType.RECAPTCHA) {
+        if (resolvedType === CaptchaType.RECAPTCHA_V3) {
             return {
-                type: CaptchaType.RECAPTCHA,
+                type: CaptchaType.RECAPTCHA_V3,
+                question: '',
+                answer: '',
+            };
+        }
+
+        if (resolvedType === CaptchaType.RECAPTCHA_V2) {
+            return {
+                type: CaptchaType.RECAPTCHA_V2,
                 question: '',
                 answer: '',
             };

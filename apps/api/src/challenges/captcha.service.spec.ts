@@ -34,10 +34,18 @@ describe('CaptchaService', () => {
         expect(result.answer).toMatch(/^\d+$/);
     });
 
-    it('always returns recaptcha when forced', () => {
-        const { type, question, answer } = service.generate('recaptcha');
+    it('always returns recaptcha v3 when forced', () => {
+        const { type, question, answer } = service.generate('recaptcha-v3');
 
-        expect(type).toBe('recaptcha');
+        expect(type).toBe('recaptcha-v3');
+        expect(question).toBe('');
+        expect(answer).toBe('');
+    });
+
+    it('always returns recaptcha v2 when forced', () => {
+        const { type, question, answer } = service.generate('recaptcha-v2');
+
+        expect(type).toBe('recaptcha-v2');
         expect(question).toBe('');
         expect(answer).toBe('');
     });
@@ -45,13 +53,14 @@ describe('CaptchaService', () => {
     it('cycles through all captcha types in round-robin', () => {
         const types = new Set<string>();
 
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < 50; i++) {
             types.add(service.generate().type);
         }
 
         expect(types.has('math')).toBe(true);
         expect(types.has('text')).toBe(true);
         expect(types.has('slider')).toBe(true);
-        expect(types.has('recaptcha')).toBe(true);
+        expect(types.has('recaptcha-v2')).toBe(true);
+        expect(types.has('recaptcha-v3')).toBe(true);
     });
 });

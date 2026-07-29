@@ -6,7 +6,8 @@ import { mock } from 'jest-mock-extended';
 import { ChallengesService } from './challenges.service';
 import { CaptchaService } from './captcha.service';
 import { SliderService } from './slider.service';
-import { RecaptchaService } from '../recaptcha/recaptcha.service';
+import { RecaptchaV3Service } from '../recaptcha/recaptcha-v3.service';
+import { RecaptchaV2Service } from '../recaptcha/recaptcha-v2.service';
 import { Challenge } from './challenge.entity';
 import {
     NotFoundException,
@@ -33,11 +34,13 @@ const makeChallenge = (
 describe('ChallengesService', () => {
     let service: ChallengesService;
     let repo: jest.Mocked<Repository<Challenge>>;
-    let recaptchaService: { verify: jest.Mock };
+    let recaptchaV3Service: { verify: jest.Mock };
+    let recaptchaV2Service: { verify: jest.Mock };
 
     beforeEach(async () => {
         repo = mock<Repository<Challenge>>();
-        recaptchaService = { verify: jest.fn().mockResolvedValue(true) };
+        recaptchaV3Service = { verify: jest.fn().mockResolvedValue(true) };
+        recaptchaV2Service = { verify: jest.fn().mockResolvedValue(true) };
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -49,8 +52,12 @@ describe('ChallengesService', () => {
                     useValue: repo,
                 },
                 {
-                    provide: RecaptchaService,
-                    useValue: recaptchaService,
+                    provide: RecaptchaV3Service,
+                    useValue: recaptchaV3Service,
+                },
+                {
+                    provide: RecaptchaV2Service,
+                    useValue: recaptchaV2Service,
                 },
                 {
                     provide: ConfigService,
@@ -148,13 +155,13 @@ describe('ChallengesService', () => {
             });
         });
 
-        it('delegates to ReCaptchaService for recaptcha type', async () => {
-            repo.findOne.mockResolvedValue(makeChallenge({ type: 'recaptcha', answer: '' }));
-            recaptchaService.verify.mockResolvedValue(true);
+        it('delegates to RecaptchaV3Service for recaptcha-v3 type', async () => {
+            repo.findOne.mockResolvedValue(makeChallenge({ type: 'recaptcha-v3', answer: '' }));
+            recaptchaV3Service.verify.mockResolvedValue(true);
 
-            const result = await service.submit('token123', 'google-token');
+            const result = await service.submit('token123', 'v3-token');
 
-            expect(recaptchaService.verify).toHaveBeenCalledWith('google-token');
+            expect(recaptchaV3Service.verify).toHaveBeenCalledWith('v3-token');
             expect(result).toEqual({ passed: true });
             expect(repo.update).toHaveBeenCalledWith('uuid', {
                 status: 'passed',
@@ -162,11 +169,38 @@ describe('ChallengesService', () => {
             });
         });
 
-        it('returns { passed: false } when ReCaptchaService returns false', async () => {
-            repo.findOne.mockResolvedValue(makeChallenge({ type: 'recaptcha', answer: '' }));
-            recaptchaService.verify.mockResolvedValue(false);
+        it('returns { passed: false } when RecaptchaV3Service returns false', async () => {
+            repo.findOne.mockResolvedValue(makeChallenge({ type: 'recaptcha-v3', answer: '' }));
+            recaptchaV3Service.verify.mockResolvedValue(false);
 
-            const result = await service.submit('token123', 'bad-token');
+            const result = await service.submit('token123', 'bad-v3-token');
+
+            expect(result).toEqual({ passed: false });
+            expect(repo.update).toHaveBeenCalledWith('uuid', {
+                status: 'failed',
+                completedAt: expect.any(Date),
+            });
+        });
+
+        it('delegates to RecaptchaV2Service for recaptcha-v2 type', async () => {
+            repo.findOne.mockResolvedValue(makeChallenge({ type: 'recaptcha-v2', answer: '' }));
+            recaptchaV2Service.verify.mockResolvedValue(true);
+
+            const result = await service.submit('token123', 'v2-token');
+
+            expect(recaptchaV2Service.verify).toHaveBeenCalledWith('v2-token');
+            expect(result).toEqual({ passed: true });
+            expect(repo.update).toHaveBeenCalledWith('uuid', {
+                status: 'passed',
+                completedAt: expect.any(Date),
+            });
+        });
+
+        it('returns { passed: false } when RecaptchaV2Service returns false', async () => {
+            repo.findOne.mockResolvedValue(makeChallenge({ type: 'recaptcha-v2', answer: '' }));
+            recaptchaV2Service.verify.mockResolvedValue(false);
+
+            const result = await service.submit('token123', 'bad-v2-token');
 
             expect(result).toEqual({ passed: false });
             expect(repo.update).toHaveBeenCalledWith('uuid', {

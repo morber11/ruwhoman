@@ -125,7 +125,8 @@ export default function CreatePage() {
                             <FormControlLabel value={CaptchaType.MATH} control={<Radio size="small" />} label="Math" />
                             <FormControlLabel value={CaptchaType.TEXT} control={<Radio size="small" />} label="Text" />
                             <FormControlLabel value={CaptchaType.SLIDER} control={<Radio size="small" />} label="Slider" />
-                            <FormControlLabel value={CaptchaType.RECAPTCHA} control={<Radio size="small" />} label="reCAPTCHA v3" />
+                            <FormControlLabel value={CaptchaType.RECAPTCHA_V2} control={<Radio size="small" />} label="reCAPTCHA v2" />
+                            <FormControlLabel value={CaptchaType.RECAPTCHA_V3} control={<Radio size="small" />} label="reCAPTCHA v3" />
                         </RadioGroup>
                     </Box>
                 )}

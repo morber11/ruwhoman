@@ -5,7 +5,12 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import ChallengePage from './ChallengePage';
 
-jest.mock('./ReCaptchaChallenge', () => ({
+jest.mock('./ReCaptchaV3Challenge', () => ({
+    __esModule: true,
+    default: () => null,
+}));
+
+jest.mock('./ReCaptchaV2Challenge', () => ({
     __esModule: true,
     default: () => null,
 }));

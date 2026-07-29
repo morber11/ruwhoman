@@ -3,7 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Challenge } from './challenge.entity';
 import { CaptchaService } from './captcha.service';
-import { RecaptchaService } from '../recaptcha/recaptcha.service';
+import { RecaptchaV3Service } from '../recaptcha/recaptcha-v3.service';
+import { RecaptchaV2Service } from '../recaptcha/recaptcha-v2.service';
 import { randomBytes } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { ConflictException } from '@nestjs/common';
@@ -15,7 +16,8 @@ export class ChallengesService {
         @InjectRepository(Challenge)
         private readonly repo: Repository<Challenge>,
         private readonly captcha: CaptchaService,
-        private readonly recaptcha: RecaptchaService,
+        private readonly recaptchaV3: RecaptchaV3Service,
+        private readonly recaptchaV2: RecaptchaV2Service,
         private readonly config: ConfigService,
     ) { }
 
@@ -87,8 +89,10 @@ export class ChallengesService {
     async submit(token: string, answer: string): Promise<{ passed: boolean }> {
         const challenge = await this.getByToken(token);
 
-        const passed = challenge.type === CaptchaType.RECAPTCHA
-            ? await this.recaptcha.verify(answer)
+        const passed = challenge.type === CaptchaType.RECAPTCHA_V3
+            ? await this.recaptchaV3.verify(answer)
+            : challenge.type === CaptchaType.RECAPTCHA_V2
+            ? await this.recaptchaV2.verify(answer)
             : answer.trim() === challenge.answer;
 
         await this.repo.update(challenge.id, {
