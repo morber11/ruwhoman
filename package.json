@@ -15,9 +15,9 @@
         "migration:run": "turbo migration:run"
     },
     "devDependencies": {
-        "turbo": "^2.7.0",
         "@types/jest": "^30.0.0",
         "globals": "^17.0.0",
-        "jest": "^30.4.2"
+        "jest": "^30.4.2",
+        "turbo": "^2.10.8"
     }
 }
