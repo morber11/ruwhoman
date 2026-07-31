@@ -3,6 +3,7 @@ import { renderWithQuery } from '../../test-utils';
 import { screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import MonitorPage from './MonitorPage';
+import { ChallengeStatus } from '@ruwhoman/shared';
 
 const mockRequest = jest.fn();
 
@@ -33,7 +34,7 @@ function renderAt(token: string) {
 
 it('polls the API every 5s while status is pending', async () => {
     mockRequest.mockResolvedValue({
-        status: 'pending',
+        status: ChallengeStatus.PENDING,
         createdAt: new Date().toISOString(),
         expiresAt: new Date(Date.now() + 86400000).toISOString(),
         completedAt: null,

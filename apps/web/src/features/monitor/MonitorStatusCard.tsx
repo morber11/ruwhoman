@@ -2,20 +2,21 @@ import { useQuery } from '@tanstack/react-query';
 import { Typography, Box, Chip } from '@mui/material';
 import type { ChipProps } from '@mui/material';
 import { request } from '../../api/client';
+import { ChallengeStatus } from '@ruwhoman/shared';
 import type { MonitorStatus } from '@ruwhoman/shared';
 
-const STATUS_LABEL: Record<string, string> = {
-    pending: 'Waiting for response',
-    passed: 'Human verified',
-    failed: 'Verification failed',
-    expired: 'Link expired',
+const STATUS_LABEL: Record<ChallengeStatus, string> = {
+    [ChallengeStatus.PENDING]: 'Waiting for response',
+    [ChallengeStatus.PASSED]: 'Human verified',
+    [ChallengeStatus.FAILED]: 'Verification failed',
+    [ChallengeStatus.EXPIRED]: 'Link expired',
 };
 
-const STATUS_COLOR: Record<string, ChipProps['color']> = {
-    pending: 'warning',
-    passed: 'success',
-    failed: 'error',
-    expired: 'default',
+const STATUS_COLOR: Record<ChallengeStatus, ChipProps['color']> = {
+    [ChallengeStatus.PENDING]: 'warning',
+    [ChallengeStatus.PASSED]: 'success',
+    [ChallengeStatus.FAILED]: 'error',
+    [ChallengeStatus.EXPIRED]: 'default',
 };
 
 export function MonitorStatusCard({ token }: { token: string }) {
@@ -23,7 +24,7 @@ export function MonitorStatusCard({ token }: { token: string }) {
         queryKey: ['monitor', token],
         queryFn: () => request<MonitorStatus>(`/monitor/${token}`),
         refetchInterval: (q) =>
-            q.state.data?.status === 'pending' ? 5000 : false,
+            q.state.data?.status === ChallengeStatus.PENDING ? 5000 : false,
     });
 
     if (isPending) return null;

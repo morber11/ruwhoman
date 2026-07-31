@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { renderWithQuery } from '../../test-utils';
-import { screen } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CreatePage from './CreatePage';
 
@@ -68,6 +68,30 @@ it('sends captcha type when selected in advanced options', async () => {
         expect.objectContaining({
             method: 'POST',
             body: JSON.stringify({ type: 'math' }),
+        }),
+    );
+});
+
+it('sends attempts when set in advanced options', async () => {
+    mockCreate.mockResolvedValue({
+        challengeUrl: 'http://example.com/abc',
+        monitorUrl: 'http://example.com/monitor/xyz',
+    });
+
+    renderWithQuery(<CreatePage />);
+    await userEvent.click(screen.getByText(/advanced options/i));
+
+    const slider = screen.getByRole('slider');
+    fireEvent.keyDown(slider, { key: 'ArrowRight' });
+    fireEvent.keyDown(slider, { key: 'ArrowRight' });
+
+    await userEvent.click(screen.getByRole('button', { name: /create/i }));
+
+    expect(mockCreate).toHaveBeenCalledWith(
+        '/challenges',
+        expect.objectContaining({
+            method: 'POST',
+            body: JSON.stringify({ attempts: 3 }),
         }),
     );
 });

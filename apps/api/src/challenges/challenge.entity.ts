@@ -4,9 +4,7 @@ import {
     Entity,
     PrimaryGeneratedColumn,
 } from 'typeorm';
-import { CaptchaType } from '@ruwhoman/shared';
-
-export type ChallengeStatus = 'pending' | 'passed' | 'failed';
+import { CaptchaType, ChallengeStatus } from '@ruwhoman/shared';
 
 @Entity()
 export class Challenge {
@@ -28,7 +26,7 @@ export class Challenge {
     @Column({ length: 255 })
     answer!: string;
 
-    @Column({ length: 10, default: 'pending' })
+    @Column({ length: 10, default: ChallengeStatus.PENDING })
     status!: ChallengeStatus;
 
     @CreateDateColumn()
@@ -39,4 +37,10 @@ export class Challenge {
 
     @Column('timestamptz', { nullable: true })
     completedAt!: Date | null;
+
+    @Column({ type: 'int', default: 1 })
+    attempts!: number;
+
+    @Column({ type: 'int', default: 1 })
+    remainingAttempts!: number;
 }

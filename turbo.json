@@ -37,6 +37,13 @@
                 "^check-types"
             ],
             "outputLogs": "full"
+        },
+        "migration:run": {
+            "cache": false,
+            "env": [
+                "DATABASE_URL"
+            ],
+            "outputLogs": "full"
         }
     }
 }

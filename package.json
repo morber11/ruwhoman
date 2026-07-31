@@ -11,7 +11,8 @@
         "build": "turbo build",
         "test": "turbo test",
         "lint": "turbo lint",
-        "check-types": "turbo check-types"
+        "check-types": "turbo check-types",
+        "migration:run": "turbo migration:run"
     },
     "devDependencies": {
         "turbo": "^2.7.0",

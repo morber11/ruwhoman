@@ -17,7 +17,7 @@ export class ChallengesController {
 
     @Post()
     create(@Body() dto: CreateChallengeDto) {
-        return this.service.create(dto.type);
+        return this.service.create(dto);
     }
 
     @Get(':token')
@@ -80,7 +80,7 @@ export class ChallengesController {
 
         const result = await this.sliderService.render(filename, targetX);
         this.renderCache.set(token, result);
-        
+
         return result;
     }
 }

@@ -9,6 +9,7 @@ import { SliderService } from './slider.service';
 import { RecaptchaV3Service } from '../recaptcha/recaptcha-v3.service';
 import { RecaptchaV2Service } from '../recaptcha/recaptcha-v2.service';
 import { Challenge } from './challenge.entity';
+import { ChallengeStatus } from '@ruwhoman/shared';
 import {
     NotFoundException,
     ConflictException,
@@ -24,10 +25,12 @@ const makeChallenge = (
     type: 'math',
     question: 'What is 1 + 1?',
     answer: '2',
-    status: 'pending' as const,
+    status: ChallengeStatus.PENDING,
     createdAt: new Date(),
     expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     completedAt: null,
+    attempts: 1,
+    remainingAttempts: 1,
     ...overrides,
 });
 
@@ -95,6 +98,22 @@ describe('ChallengesService', () => {
             expect(saved.challengeToken).toMatch(/^[A-Za-z0-9_-]{8}$/);
             expect(saved.monitorToken).toMatch(/^[A-Za-z0-9_-]{24}$/);
         });
+
+        it('sets attempts and remainingAttempts to 1 by default', async () => {
+            await service.create();
+
+            const saved = (repo.save as jest.Mock).mock.calls[0][0] as Partial<Challenge>;
+            expect(saved.attempts).toBe(1);
+            expect(saved.remainingAttempts).toBe(1);
+        });
+
+        it('saves configured attempts', async () => {
+            await service.create({ attempts: 5 });
+
+            const saved = (repo.save as jest.Mock).mock.calls[0][0] as Partial<Challenge>;
+            expect(saved.attempts).toBe(5);
+            expect(saved.remainingAttempts).toBe(5);
+        });
     });
 
     describe('getByToken', () => {
@@ -118,7 +137,7 @@ describe('ChallengesService', () => {
 
         it('throws ConflictException for completed challenge', async () => {
             repo.findOne.mockResolvedValue(
-                makeChallenge({ status: 'passed' }),
+                makeChallenge({ status: ChallengeStatus.PASSED }),
             );
 
             await expect(service.getByToken('token123')).rejects.toThrow(
@@ -129,28 +148,44 @@ describe('ChallengesService', () => {
 
     describe('submit', () => {
         it('returns { passed: true } and persists status for correct answer', async () => {
-
             repo.findOne.mockResolvedValue(makeChallenge());
             const result = await service.submit('token123', '2');
 
-
-            expect(result).toEqual({ passed: true });
+            expect(result).toEqual({ passed: true, attemptsLeft: 1 });
             expect(repo.update).toHaveBeenCalledWith('uuid', {
-                status: 'passed',
-
+                status: ChallengeStatus.PASSED,
                 completedAt: expect.any(Date),
             });
         });
 
         it('returns { passed: false } and persists status for wrong answer', async () => {
-
             repo.findOne.mockResolvedValue(makeChallenge());
+            repo.findOneBy.mockResolvedValue(makeChallenge({ remainingAttempts: 0 }));
             const result = await service.submit('token123', 'wrong');
 
-            expect(result).toEqual({ passed: false });
+            expect(result).toEqual({ passed: false, attemptsLeft: 0 });
+            expect(repo.decrement).toHaveBeenCalled();
             expect(repo.update).toHaveBeenCalledWith('uuid', {
-                status: 'failed',
+                status: ChallengeStatus.FAILED,
+                completedAt: expect.any(Date),
+            });
+        });
 
+        it('consumes one attempt per wrong answer and fails at zero', async () => {
+            repo.findOne.mockResolvedValue(makeChallenge({ remainingAttempts: 2 }));
+            repo.findOneBy.mockResolvedValue(makeChallenge({ remainingAttempts: 1 }));
+            const first = await service.submit('token123', 'wrong');
+
+            expect(first).toEqual({ passed: false, attemptsLeft: 1 });
+            expect(repo.update).not.toHaveBeenCalled();
+
+            repo.findOne.mockResolvedValue(makeChallenge({ remainingAttempts: 1 }));
+            repo.findOneBy.mockResolvedValue(makeChallenge({ remainingAttempts: 0 }));
+            const second = await service.submit('token123', 'wrong');
+
+            expect(second).toEqual({ passed: false, attemptsLeft: 0 });
+            expect(repo.update).toHaveBeenCalledWith('uuid', {
+                status: ChallengeStatus.FAILED,
                 completedAt: expect.any(Date),
             });
         });
@@ -162,22 +197,23 @@ describe('ChallengesService', () => {
             const result = await service.submit('token123', 'v3-token');
 
             expect(recaptchaV3Service.verify).toHaveBeenCalledWith('v3-token');
-            expect(result).toEqual({ passed: true });
+            expect(result).toEqual({ passed: true, attemptsLeft: 1 });
             expect(repo.update).toHaveBeenCalledWith('uuid', {
-                status: 'passed',
+                status: ChallengeStatus.PASSED,
                 completedAt: expect.any(Date),
             });
         });
 
         it('returns { passed: false } when RecaptchaV3Service returns false', async () => {
             repo.findOne.mockResolvedValue(makeChallenge({ type: 'recaptcha-v3', answer: '' }));
+            repo.findOneBy.mockResolvedValue(makeChallenge({ remainingAttempts: 0 }));
             recaptchaV3Service.verify.mockResolvedValue(false);
 
             const result = await service.submit('token123', 'bad-v3-token');
 
-            expect(result).toEqual({ passed: false });
+            expect(result).toEqual({ passed: false, attemptsLeft: 0 });
             expect(repo.update).toHaveBeenCalledWith('uuid', {
-                status: 'failed',
+                status: ChallengeStatus.FAILED,
                 completedAt: expect.any(Date),
             });
         });
@@ -189,22 +225,23 @@ describe('ChallengesService', () => {
             const result = await service.submit('token123', 'v2-token');
 
             expect(recaptchaV2Service.verify).toHaveBeenCalledWith('v2-token');
-            expect(result).toEqual({ passed: true });
+            expect(result).toEqual({ passed: true, attemptsLeft: 1 });
             expect(repo.update).toHaveBeenCalledWith('uuid', {
-                status: 'passed',
+                status: ChallengeStatus.PASSED,
                 completedAt: expect.any(Date),
             });
         });
 
         it('returns { passed: false } when RecaptchaV2Service returns false', async () => {
             repo.findOne.mockResolvedValue(makeChallenge({ type: 'recaptcha-v2', answer: '' }));
+            repo.findOneBy.mockResolvedValue(makeChallenge({ remainingAttempts: 0 }));
             recaptchaV2Service.verify.mockResolvedValue(false);
 
             const result = await service.submit('token123', 'bad-v2-token');
 
-            expect(result).toEqual({ passed: false });
+            expect(result).toEqual({ passed: false, attemptsLeft: 0 });
             expect(repo.update).toHaveBeenCalledWith('uuid', {
-                status: 'failed',
+                status: ChallengeStatus.FAILED,
                 completedAt: expect.any(Date),
             });
         });

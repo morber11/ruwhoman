@@ -51,7 +51,7 @@ export default function ChallengePage() {
         enabled: !!token,
     });
 
-    const mutation = useMutation<{ passed: boolean }, Error, string>({
+    const mutation = useMutation<{ passed: boolean; attemptsLeft: number }, Error, string>({
         mutationFn: (answer: string) =>
             minDuration(
                 request(`/challenges/${token!}/submit`, {
@@ -102,10 +102,19 @@ export default function ChallengePage() {
         );
     }
 
+    const isSuccessOrFailure =
+        mutation.isSuccess && (mutation.data.passed || mutation.data.attemptsLeft === 0);
+
     return (
         <Box sx={{ maxWidth: 400, mx: 'auto', textAlign: 'center', position: 'relative', minHeight: 200 }}>
-            <Fade in={!mutation.isSuccess} timeout={300}>
-                <Box sx={{ position: 'absolute', width: '100%' }}>
+            <Fade in={!isSuccessOrFailure} timeout={300}>
+                <Box key={mutation.data?.attemptsLeft} sx={{ position: 'absolute', width: '100%' }}>
+                    {mutation.isSuccess && !mutation.data.passed && mutation.data.attemptsLeft > 0 && (
+                        <Typography variant="body2" sx={{ color: 'error.main', mb: 2 }}>
+                            Wrong answer - {mutation.data.attemptsLeft}{' '}
+                            {mutation.data.attemptsLeft === 1 ? 'attempt' : 'attempts'} left
+                        </Typography>
+                    )}
                     {data.type === CaptchaType.SLIDER ? (
                         <SliderCaptcha
                             token={token!}
@@ -140,7 +149,7 @@ export default function ChallengePage() {
                 </Box>
             </Fade>
 
-            {mutation.isSuccess && (
+            {isSuccessOrFailure && (
                 <Box
                     sx={{
                         position: 'absolute',

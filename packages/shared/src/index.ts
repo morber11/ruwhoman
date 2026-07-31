@@ -6,7 +6,14 @@ export const CaptchaType = {
     RECAPTCHA_V2: 'recaptcha-v2',
 } as const;
 
-export type ChallengeStatus = 'pending' | 'passed' | 'failed' | 'expired';
+export const ChallengeStatus = {
+    PENDING: 'pending',
+    PASSED: 'passed',
+    FAILED: 'failed',
+    EXPIRED: 'expired',
+} as const;
+
+export type ChallengeStatus = (typeof ChallengeStatus)[keyof typeof ChallengeStatus];
 
 export interface MonitorStatus {
     status: ChallengeStatus;

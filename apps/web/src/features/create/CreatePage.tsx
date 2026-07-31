@@ -8,6 +8,7 @@ import {
     Radio,
     RadioGroup,
     FormControlLabel,
+    Slider,
 } from '@mui/material';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 import OpenInNew from '@mui/icons-material/OpenInNew';
@@ -35,11 +36,15 @@ export default function CreatePage() {
     const [copied, setCopied] = useState(false);
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [captchaType, setCaptchaType] = useState<string>('');
+    const [attempts, setAttempts] = useState(1);
     const queryClient = useQueryClient();
 
     const mutation = useMutation<{ challengeUrl: string; monitorUrl: string }>({
         mutationFn: () => {
-            const body = captchaType ? { type: captchaType } : {};
+            const body: { type?: string; attempts?: number } = {};
+
+            if (captchaType) body.type = captchaType;
+            if (attempts !== 1) body.attempts = attempts;
 
             return minDuration(
                 request('/challenges', {
@@ -113,22 +118,43 @@ export default function CreatePage() {
                     {showAdvanced ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
                 </Typography>
                 {showAdvanced && (
-                    <Box sx={{ mt: 1.5, textAlign: 'left' }}>
-                        <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', display: 'block', mb: 0.5 }}>
-                            Captcha type
-                        </Typography>
-                        <RadioGroup
-                            value={captchaType}
-                            onChange={(e) => setCaptchaType(e.target.value)}
-                        >
-                            <FormControlLabel value="" control={<Radio size="small" />} label="Random" />
-                            <FormControlLabel value={CaptchaType.MATH} control={<Radio size="small" />} label="Math" />
-                            <FormControlLabel value={CaptchaType.TEXT} control={<Radio size="small" />} label="Text" />
-                            <FormControlLabel value={CaptchaType.SLIDER} control={<Radio size="small" />} label="Slider" />
-                            <FormControlLabel value={CaptchaType.RECAPTCHA_V2} control={<Radio size="small" />} label="reCAPTCHA v2" />
-                            <FormControlLabel value={CaptchaType.RECAPTCHA_V3} control={<Radio size="small" />} label="reCAPTCHA v3" />
-                        </RadioGroup>
-                    </Box>
+                    <>
+                        <Box sx={{ mt: 1.5, textAlign: 'left' }}>
+                            <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', display: 'block', mb: 0.5 }}>
+                                Captcha type
+                            </Typography>
+                            <RadioGroup
+                                value={captchaType}
+                                onChange={(e) => setCaptchaType(e.target.value)}
+                            >
+                                <FormControlLabel value="" control={<Radio size="small" />} label="Random" />
+                                <FormControlLabel value={CaptchaType.MATH} control={<Radio size="small" />} label="Math" />
+                                <FormControlLabel value={CaptchaType.TEXT} control={<Radio size="small" />} label="Text" />
+                                <FormControlLabel value={CaptchaType.SLIDER} control={<Radio size="small" />} label="Slider" />
+                                <FormControlLabel value={CaptchaType.RECAPTCHA_V2} control={<Radio size="small" />} label="reCAPTCHA v2" />
+                                <FormControlLabel value={CaptchaType.RECAPTCHA_V3} control={<Radio size="small" />} label="reCAPTCHA v3" />
+                            </RadioGroup>
+                        </Box>
+                        <Box sx={{ mt: 2 }}>
+                            <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', display: 'block', mb: 0.5 }}>
+                                Attempts
+                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Slider
+                                    value={attempts}
+                                    onChange={(_, value) => setAttempts(value as number)}
+                                    min={1}
+                                    max={10}
+                                    step={1}
+                                    valueLabelDisplay="auto"
+                                    sx={{ flex: 1 }}
+                                />
+                                <Typography variant="body2" sx={{ color: 'text.secondary', minWidth: 16, textAlign: 'right' }}>
+                                    {attempts}
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </>
                 )}
             </Box>
 

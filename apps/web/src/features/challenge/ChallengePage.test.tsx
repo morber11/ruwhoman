@@ -59,6 +59,27 @@ it('submits the answer and shows passed', async () => {
     ).toBeInTheDocument();
 });
 
+it('keeps the form visible and shows attempts left after a wrong answer', async () => {
+    mockRequest
+        .mockResolvedValueOnce({ type: 'math', question: 'What is 1 + 1?' })
+        .mockResolvedValueOnce({ passed: false, attemptsLeft: 1 })
+        .mockResolvedValueOnce({ passed: true, attemptsLeft: 1 });
+
+    renderAt('abc123');
+    await screen.findByText('What is 1 + 1?');
+
+    await userEvent.type(screen.getByRole('textbox'), '3');
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+    expect(await screen.findByText(/1 attempt left/i)).toBeInTheDocument();
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+
+    await userEvent.type(screen.getByRole('textbox'), '2');
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+    expect(await screen.findByText(/correct/i)).toBeInTheDocument();
+});
+
 it('shows expired for 404', async () => {
     const err = new Error('404');
     (err as { status?: number }).status = 404;
