@@ -42,9 +42,10 @@ export function MonitorStatusCard({ token }: { token: string }) {
     return (
         <Box sx={{ pt: 1, textAlign: 'center' }}>
             <Chip
-                label={STATUS_LABEL[status] ?? status}
-                color={STATUS_COLOR[status] ?? 'default'}
+                label={STATUS_LABEL[status]}
+                color={STATUS_COLOR[status]}
                 variant="filled"
+                sx={{ minWidth: 150, justifyContent: 'center' }}
             />
             <Box sx={{ mt: 1.5, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                 <Box>
